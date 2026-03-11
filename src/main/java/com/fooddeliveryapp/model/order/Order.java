@@ -13,6 +13,9 @@ public class Order {
     private BigDecimal totalAmount;
     private int addressId;
     private OrderStatus orderStatus;
+    private double discountRate;
+    private BigDecimal discountAmount;
+    private BigDecimal finalAmount;
     private List<OrderItem> orderItems;
     private static int counter = 0;
 
@@ -93,5 +96,29 @@ public class Order {
     public void addItem(OrderItem orderItem)
     {
         orderItems.add(orderItem);
+    }
+
+    public double getDiscountRate() {
+        return discountRate;
+    }
+
+    public void setDiscountRate(double discountRate) {
+        this.discountRate = discountRate;
+    }
+
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
+    public BigDecimal getFinalAmount() {
+        return finalAmount;
+    }
+
+    public void setFinalAmount(BigDecimal finalAmount) {
+        this.finalAmount = finalAmount;
     }
 }
