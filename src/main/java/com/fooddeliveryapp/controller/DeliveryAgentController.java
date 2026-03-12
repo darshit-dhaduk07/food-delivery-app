@@ -1,5 +1,4 @@
 package com.fooddeliveryapp.controller;
 
-public class CustomerController {
-
+public class DeliveryAgentController {
 }
