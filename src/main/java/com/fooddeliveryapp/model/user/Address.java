@@ -1,7 +1,7 @@
 package com.fooddeliveryapp.model.user;
 
 public class Address {
-//    private int id;
+    private int id;
     private String addressName;
     private int customerId;
     private int counter = 0;

@@ -3,29 +3,29 @@ package com.fooddeliveryapp.model.menu;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MenuCategory extends MenuComponent{
+public class MenuCategory{
     private int id;
     private String name;
-    private List<MenuComponent> menuComponents;
+
 
     public MenuCategory(String name)
     {
         this.name = name;
-        menuComponents = new ArrayList<>();
-        this.id = ++counter;
-    }
-
-    public List<MenuComponent> getMenuComponents()
-    {
-        return menuComponents;
     }
 
     public int getId() {
         return id;
     }
 
-    @Override
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

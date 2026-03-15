@@ -2,16 +2,14 @@ package com.fooddeliveryapp.model.menu;
 
 import java.math.BigDecimal;
 
-public class MenuItem extends MenuComponent{
+public class MenuItem{
     private int id;
     private BigDecimal price;
     private String name;
     private boolean isAvailable;
-    private static int counter = 0;
 
     public MenuItem(BigDecimal price,String name)
     {
-        this.id = ++counter;
         this.price = price;
         this.name = name;
     }
@@ -24,12 +22,27 @@ public class MenuItem extends MenuComponent{
         return price;
     }
 
-    @Override
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
     public String getName() {
         return name;
     }
 
-    public boolean isAvailable() {
-        return isAvailable;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
     }
 }
