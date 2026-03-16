@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CustomerDAO {
-
+    private CartDAO cartDAO;
     public int addCustomer(Customer customer) {
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
@@ -25,15 +25,9 @@ public class CustomerDAO {
                 stmt.executeUpdate();
             }
 
-            String cartQuery = """
-                            INSERT INTO cart (customer_id)
-                            VALUES (?)
-                            """;
-            try(PreparedStatement stmt = conn.prepareStatement(cartQuery))
-            {
-                stmt.setInt(1,customer.getId());
-                stmt.executeUpdate();
-            }
+//            create cart
+            cartDAO.createCart(customer.getId());
+
             conn.commit();
             return userId;
 
