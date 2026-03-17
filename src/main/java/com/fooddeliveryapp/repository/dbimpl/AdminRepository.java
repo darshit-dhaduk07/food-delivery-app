@@ -1,23 +1,19 @@
 package com.fooddeliveryapp.repository.dbimpl;
 
 import com.fooddeliveryapp.dbconnection.DBConnection;
-import com.fooddeliveryapp.enums.Role;
 import com.fooddeliveryapp.model.user.Admin;
-import com.fooddeliveryapp.model.user.Customer;
-import com.fooddeliveryapp.model.user.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
-public class AdminDAO {
+public class AdminRepository {
 
     public int addAdmin(Admin admin) {
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
 
-            int userId = UserDAO.insertUser(conn, admin); // shared
+            int userId = UserRepository.insertUser(conn, admin); // shared
 
             String query = "INSERT INTO admins(admin_id) VALUES (?)";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {

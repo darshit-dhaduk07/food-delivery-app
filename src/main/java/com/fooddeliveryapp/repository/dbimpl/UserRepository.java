@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDAO {
+public class UserRepository {
     private static User mapRow(ResultSet rs, Role role) throws SQLException {
         User user = switch (role) {
             case CUSTOMER -> new Customer();

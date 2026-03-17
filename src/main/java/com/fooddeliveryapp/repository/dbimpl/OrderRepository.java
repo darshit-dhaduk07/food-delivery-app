@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderDAO {
+public class OrderRepository {
     public List<OrderItem> getOrderItems(int orderId)
     {
         String query = """

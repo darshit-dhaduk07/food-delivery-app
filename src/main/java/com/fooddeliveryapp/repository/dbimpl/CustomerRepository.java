@@ -11,13 +11,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-public class CustomerDAO {
-    private CartDAO cartDAO;
+public class CustomerRepository {
+    private CartRepository cartRepository;
     public int addCustomer(Customer customer) {
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
 
-            int userId = UserDAO.insertUser(conn, customer); // shared
+            int userId = UserRepository.insertUser(conn, customer); // shared
 
             String customerQuery = "INSERT INTO customers(customer_id) VALUES (?)";
             try (PreparedStatement stmt = conn.prepareStatement(customerQuery)) {
@@ -26,7 +26,7 @@ public class CustomerDAO {
             }
 
 //            create cart
-            cartDAO.createCart(customer.getId());
+            cartRepository.createCart(customer.getId());
 
             conn.commit();
             return userId;
@@ -38,12 +38,12 @@ public class CustomerDAO {
 
 
     public List<Customer> getAllCustomer() {
-        List<User> users = UserDAO.getAllUsers(Role.CUSTOMER);
+        List<User> users = UserRepository.getAllUsers(Role.CUSTOMER);
         return users.stream().map(u->(Customer)u).toList();
     }
 
     public void removeCustomer(int id) {
-        UserDAO.deleteById(id);
+        UserRepository.deleteById(id);
     }
 
     public void addAddress(Address address)

@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MenuDAO {
+public class MenuRepository {
     public List<MenuItem> getAvailableMenuItems()
     {
         String query = """

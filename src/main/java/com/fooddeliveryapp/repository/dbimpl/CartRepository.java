@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CartDAO {
+public class CartRepository {
 
     public List<CartItem> getAllCartItem(int customerId)
     {
