@@ -1,10 +1,10 @@
 package com.fooddeliveryapp.enums;
 
 public enum OrderStatus {
-    CREATED,
+    PENDING,
     CONFIRMED,
     PREPARING,
-    OUT_FOR_DELIVERY,
+    ON_THE_WAY,
     DELIVERED,
     CANCELLED
 }

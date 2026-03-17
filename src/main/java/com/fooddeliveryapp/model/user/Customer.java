@@ -3,7 +3,6 @@ package com.fooddeliveryapp.model.user;
 import com.fooddeliveryapp.enums.Role;
 
 public class Customer extends User{
-    private int id;
     public Customer(String name, String email, String phone, String password, Role role) {
         super(name,email,phone,password,role);
     }
@@ -12,15 +11,7 @@ public class Customer extends User{
         super();
     }
 
-    @Override
-    public int getId() {
-        return id;
-    }
 
-    @Override
-    public void setId(int id) {
-        this.id = id;
-    }
 
     @Override
     public String getName() {

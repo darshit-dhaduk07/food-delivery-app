@@ -32,9 +32,9 @@ public class CartRepository {
             while (rs.next())
             {
                 CartItem cartItem = new CartItem();
-                cartItem.setCartId(rs.getInt("cart_item_id"));
-                cartItem.setCartId(rs.getInt("menu_item_id"));
-                cartItem.setCartId(rs.getInt("quantity"));
+                cartItem.setId(rs.getInt("cart_item_id"));
+                cartItem.setMenuItemId(rs.getInt("menu_item_id"));
+                cartItem.setQuantity(rs.getInt("quantity"));
                 cartItem.setPrice(rs.getBigDecimal("price"));
 
                 cartItems.add(cartItem);
@@ -46,17 +46,14 @@ public class CartRepository {
         }
         return cartItems;
     }
-    public void createCart(int customerId) throws SQLException
-    {
+
+    public void createCart(Connection conn, int customerId) throws SQLException {
         String cartQuery = """
-                            INSERT INTO cart (customer_id)
-                            VALUES (?)
-                            """;
-        try(
-                Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(cartQuery))
-        {
-            stmt.setInt(1,customerId);
+                        INSERT INTO cart (customer_id)
+                        VALUES (?)
+                        """;
+        try (PreparedStatement stmt = conn.prepareStatement(cartQuery)) {
+            stmt.setInt(1, customerId);
             stmt.executeUpdate();
         }
     }
@@ -79,7 +76,7 @@ public class CartRepository {
         }
         catch (SQLException e)
         {
-            System.out.println("Item not added"+e);
+            throw new RuntimeException("Failed to add item to cart", e);
         }
     }
     public void removeItemFromCart(int itemId)
@@ -120,6 +117,47 @@ public class CartRepository {
         catch (SQLException e)
         {
             System.out.println("Quantity not updated" + e);
+        }
+    }
+    public int getCartIdByCustomerId(int customerId) {
+        String query = """
+                    SELECT cart_id FROM cart
+                    WHERE customer_id = ?
+                    """;
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, customerId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("cart_id");
+            }
+            throw new RuntimeException("Cart not found for customer: " + customerId);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get cart id", e);
+        }
+    }
+    public void clearCart(int customerId) {
+        String query = """
+                    DELETE FROM cart_item
+                    WHERE cart_id = (
+                        SELECT cart_id FROM cart WHERE customer_id = ?
+                    )
+                    """;
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, customerId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to clear cart", e);
         }
     }
 }

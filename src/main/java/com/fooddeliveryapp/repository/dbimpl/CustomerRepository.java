@@ -8,11 +8,40 @@ import com.fooddeliveryapp.model.user.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerRepository {
-    private CartRepository cartRepository;
+    private final CartRepository cartRepository = new CartRepository();
+
+    public List<Address> getAddressesByCustomerId(int customerId) {
+        String query = """
+                    SELECT address_id, address, customer_id
+                    FROM addresses
+                    WHERE customer_id = ?
+                    """;
+
+        List<Address> addresses = new ArrayList<>();
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, customerId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Address address = new Address(rs.getString("address"), rs.getInt("customer_id"));
+                address.setId(rs.getInt("address_id"));
+                addresses.add(address);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get addresses", e);
+        }
+        return addresses;
+    }
     public int addCustomer(Customer customer) {
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
@@ -26,7 +55,12 @@ public class CustomerRepository {
             }
 
 //            create cart
-            cartRepository.createCart(customer.getId());
+            try {
+                cartRepository.createCart(conn, userId);
+            } catch (SQLException e) {
+                conn.rollback();
+                throw new RuntimeException("Failed to create cart", e);
+            }
 
             conn.commit();
             return userId;
@@ -46,23 +80,26 @@ public class CustomerRepository {
         UserRepository.deleteById(id);
     }
 
-    public void addAddress(Address address)
-    {
+    public int addAddress(Address address) {
         String query = """
-                        INSERT INTO addresses (address,customer_id)
-                        VALUES (?,?)
-                        """;
+                    INSERT INTO addresses (address, customer_id)
+                    VALUES (?, ?)
+                    RETURNING address_id
+                    """;
 
-        try(Connection connection = DBConnection.getConnection();
-            PreparedStatement ps = connection.prepareStatement(query);){
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
 
-            ps.setString(1,address.getAddressName());
-            ps.setInt(2,address.getCustomerId());
+            ps.setString(1, address.getAddressName());
+            ps.setInt(2, address.getCustomerId());
 
-            ps.executeUpdate();
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("address_id");
+            }
+            throw new RuntimeException("Failed to get address_id");
 
-        }catch (SQLException e)
-        {
+        } catch (SQLException e) {
             throw new RuntimeException("Failed to add address", e);
         }
     }

@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepository {
+
+    // without password — for listing only
     private static User mapRow(ResultSet rs, Role role) throws SQLException {
         User user = switch (role) {
             case CUSTOMER -> new Customer();
@@ -30,10 +32,17 @@ public class UserRepository {
         return user;
     }
 
+    // with password — for login only
+    private static User mapRowWithPassword(ResultSet rs, Role role) throws SQLException {
+        User user = mapRow(rs, role);
+        user.setPassword(rs.getString("password"));
+        return user;
+    }
+
     public static int insertUser(Connection conn, User user) throws SQLException {
         String query = """
-                INSERT INTO users(role, name, email, password, phone)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO users(role, name, email, password, phone, is_active)
+                VALUES (?::roles, ?, ?, ?, ?, true)
                 RETURNING user_id
                 """;
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -54,9 +63,9 @@ public class UserRepository {
 
     public static List<User> getAllUsers(Role role) {
         String query = """
-                SELECT u.user_id,u.name,u.email,u.phone,u.role,u.is_active
-                FROM users u 
-                WHERE u.role = ?
+                SELECT u.user_id, u.name, u.email, u.phone, u.role, u.is_active
+                FROM users u
+                WHERE u.role = ?::roles
                 AND u.is_active = true
                 """;
         List<User> users = new ArrayList<>();
@@ -68,13 +77,12 @@ public class UserRepository {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-
                 users.add(mapRow(resultSet, role));
-
             }
             return users;
+
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to get customer", e);
+            throw new RuntimeException("Failed to get users", e);
         }
     }
 
@@ -84,7 +92,6 @@ public class UserRepository {
                 SET is_active = false
                 WHERE user_id = ?
                 """;
-
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
 
@@ -92,8 +99,53 @@ public class UserRepository {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to remove customer", e);
+            throw new RuntimeException("Failed to remove user", e);
         }
     }
 
+    public static User findUserById(int id) {
+        String query = """
+                SELECT u.user_id, u.name, u.email, u.phone, u.role, u.is_active, u.password
+                FROM users u
+                WHERE u.user_id = ? AND u.is_active = true
+                """;
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return mapRowWithPassword(rs, Role.valueOf(rs.getString("role")));
+            }
+            return null;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find user by id", e);
+        }
+    }
+
+    public static User findUserByEmail(String email) {
+        String query = """
+                SELECT u.user_id, u.name, u.email, u.phone, u.role, u.is_active, u.password
+                FROM users u
+                WHERE u.email = ? AND u.is_active = true
+                """;
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return mapRowWithPassword(rs, Role.valueOf(rs.getString("role")));
+            }
+            return null;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find user by email", e);
+        }
+    }
 }

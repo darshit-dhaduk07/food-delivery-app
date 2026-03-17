@@ -2,23 +2,24 @@ package com.fooddeliveryapp.model.user;
 
 import com.fooddeliveryapp.enums.Role;
 
+import java.sql.Timestamp;
+
 public class DeliveryAgent extends User{
-    private int id;
     boolean isAvailable;
+    private Timestamp orderAssignTime;
+    private Timestamp lastFreeTime;
     public DeliveryAgent(String name, String email, String phone, String password, Role role) {
         super(name, email, phone, password,role);
     }
 
-    @Override
-    public int getId() {
-        return id;
-    }
 
-    @Override
-    public void setId(int id) {
-        this.id = id;
-    }
 
+
+    public Timestamp getOrderAssignTime() { return orderAssignTime; }
+    public void setOrderAssignTime(Timestamp orderAssignTime) { this.orderAssignTime = orderAssignTime; }
+
+    public Timestamp getLastFreeTime() { return lastFreeTime; }
+    public void setLastFreeTime(Timestamp lastFreeTime) { this.lastFreeTime = lastFreeTime; }
     public boolean isAvailable() {
         return isAvailable;
     }

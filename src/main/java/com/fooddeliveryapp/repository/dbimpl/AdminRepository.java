@@ -13,7 +13,7 @@ public class AdminRepository {
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
 
-            int userId = UserRepository.insertUser(conn, admin); // shared
+            int userId = UserRepository.insertUser(conn, admin);
 
             String query = "INSERT INTO admins(admin_id) VALUES (?)";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -25,6 +25,9 @@ public class AdminRepository {
             return userId;
 
         } catch (SQLException e) {
+            if (e.getSQLState().equals("23505")) {
+                throw new RuntimeException("An admin already exists. Only one admin is allowed.", e);
+            }
             throw new RuntimeException("Failed to add admin", e);
         }
     }

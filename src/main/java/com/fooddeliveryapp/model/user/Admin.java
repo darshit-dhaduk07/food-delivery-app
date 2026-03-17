@@ -3,20 +3,10 @@ package com.fooddeliveryapp.model.user;
 import com.fooddeliveryapp.enums.Role;
 
 public class Admin extends User{
-    private int id;
     public Admin(String name, String email, String phone, String password, Role role) {
         super(name, email, phone, password,role);
     }
 
-    @Override
-    public int getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public Admin() {
         super();

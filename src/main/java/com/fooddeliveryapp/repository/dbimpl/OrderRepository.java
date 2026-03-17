@@ -87,12 +87,12 @@ public class OrderRepository {
             }
 
             conn.commit();
+            order.setId(orderId);
             return orderId;
         }
         catch (SQLException e)
         {
-            System.out.println("Order not placed" + e);
-            return -1;
+            throw new RuntimeException("Order not placed", e);
         }
     }
 
@@ -163,7 +163,7 @@ public class OrderRepository {
                                total_amount, discount_rate, status,
                                address_id, created_at
                         FROM orders
-                        WHERE status = 'PENDING'
+                        WHERE status = 'PENDING'::order_status
                         ORDER BY created_at ASC
                         """;
 
@@ -270,5 +270,30 @@ public class OrderRepository {
         order.setId(rs.getInt("order_id"));
         order.setDiscountRate(rs.getDouble("discount_rate"));
         return order;
+    }
+    public List<Order> getPendingUnassignedOrders() {
+        String query = """
+                    SELECT order_id, customer_id, delivery_agent_id,
+                           total_amount, discount_rate, status,
+                           address_id, created_at
+                    FROM orders
+                    WHERE status = 'CONFIRMED'::order_status
+                    AND delivery_agent_id IS NULL
+                    ORDER BY created_at ASC
+                    """;
+
+        List<Order> orders = new ArrayList<>();
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                orders.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("Can't get pending unassigned orders" + e);
+        }
+        return orders;
     }
 }

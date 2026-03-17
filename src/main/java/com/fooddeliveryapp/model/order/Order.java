@@ -20,7 +20,7 @@ public class Order {
     private static int counter = 0;
 
     public Order(int customerId, int deliveryAgentId, BigDecimal totalAmount, int addressId, OrderStatus orderStatus, List<OrderItem> orderItems) {
-        this.id = ++counter;
+//        this.id = ++counter;
         this.customerId = customerId;
         this.deliveryAgentId = deliveryAgentId;
         this.totalAmount = totalAmount;
