@@ -10,10 +10,10 @@ public class PaymentRepository {
 
     public int savePayment(Payment payment) {
         String query = """
-                        INSERT INTO payments (order_id, payment_method, status, amount)
-                        VALUES (?, ?::payment_methods, ?::payment_status, ?)
-                        RETURNING payment_id
-                        """;
+                INSERT INTO payments (order_id, payment_method, status, amount)
+                VALUES (?, ?::payment_methods, ?::payment_status, ?)
+                RETURNING payment_id
+                """;
 
         try (
                 Connection conn = DBConnection.getConnection();
@@ -39,10 +39,10 @@ public class PaymentRepository {
 
     public void updatePaymentStatus(int paymentId, PaymentStatus status) {
         String query = """
-                        UPDATE payments
-                        SET status = ?::payment_status
-                        WHERE payment_id = ?
-                        """;
+                UPDATE payments
+                SET status = ?::payment_status
+                WHERE payment_id = ?
+                """;
 
         try (
                 Connection conn = DBConnection.getConnection();
@@ -59,10 +59,10 @@ public class PaymentRepository {
 
     public Payment getPaymentByOrderId(int orderId) {
         String query = """
-                        SELECT payment_id, order_id, payment_method, status, amount, created_at
-                        FROM payments
-                        WHERE order_id = ?
-                        """;
+                SELECT payment_id, order_id, payment_method, status, amount, created_at
+                FROM payments
+                WHERE order_id = ?
+                """;
 
         try (
                 Connection conn = DBConnection.getConnection();

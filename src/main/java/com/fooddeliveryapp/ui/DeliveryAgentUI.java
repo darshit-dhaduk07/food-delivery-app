@@ -6,7 +6,7 @@ import com.fooddeliveryapp.enums.OrderStatus;
 import com.fooddeliveryapp.model.order.Order;
 import com.fooddeliveryapp.model.user.DeliveryAgent;
 import com.fooddeliveryapp.model.user.User;
-import com.fooddeliveryapp.utility.InputHelper;
+import com.fooddeliveryapp.utility.InputTaker;
 
 import java.util.List;
 
@@ -22,13 +22,13 @@ public class DeliveryAgentUI {
         this.deliveryAgentController = deliveryAgentController;
     }
 
-    // ─── Login ───────────────────────────────────────────────────────────────
+    // Login
 
     public void menu() {
         System.out.println("\n┌─── Delivery Agent Login ───────────");
         try {
-            String email    = InputHelper.readString("│  Email    : ");
-            String password = InputHelper.readString("│  Password : ");
+            String email    = InputTaker.readString("│  Email    : ");
+            String password = InputTaker.readString("│  Password : ");
             System.out.println("└────────────────────────────────────");
             User user = authController.login(email, password);
             if (user instanceof DeliveryAgent agent) {
@@ -44,7 +44,7 @@ public class DeliveryAgentUI {
         }
     }
 
-    // ─── Main Panel ──────────────────────────────────────────────────────────
+    // Main Panel
 
     private void agentPanel() {
         while (true) {
@@ -60,7 +60,7 @@ public class DeliveryAgentUI {
             System.out.println("║  0. Logout                   ║");
             System.out.println("╚══════════════════════════════╝");
 
-            int choice = InputHelper.readInt("Select: ");
+            int choice = InputTaker.readInt("Select: ");
             switch (choice) {
                 case 1 -> ordersPanel();
                 case 2 -> viewEarnings();
@@ -74,7 +74,7 @@ public class DeliveryAgentUI {
         }
     }
 
-    // ─── Orders Sub-Panel ────────────────────────────────────────────────────
+    // Orders Sub-Panel
 
     private void ordersPanel() {
         while (true) {
@@ -87,7 +87,7 @@ public class DeliveryAgentUI {
             System.out.println("║  0. Back                     ║");
             System.out.println("╚══════════════════════════════╝");
 
-            int choice = InputHelper.readInt("Select: ");
+            int choice = InputTaker.readInt("Select: ");
             switch (choice) {
                 case 1 -> viewAssignedOrders();
                 case 2 -> updateOrderStatus();
@@ -97,7 +97,7 @@ public class DeliveryAgentUI {
         }
     }
 
-    // ─── Orders ──────────────────────────────────────────────────────────────
+    // Orders
 
     private List<Order> viewAssignedOrders() {
         List<Order> orders = deliveryAgentController.viewAssignedOrders(loggedInAgent.getId());
@@ -137,7 +137,7 @@ public class DeliveryAgentUI {
 
         try {
             List<Integer> validIds = activeOrders.stream().map(Order::getId).toList();
-            int orderId = InputHelper.readIdFromList("Enter Order ID: ", validIds);
+            int orderId = InputTaker.readIdFromList("Enter Order ID: ", validIds);
 
             Order selected = activeOrders.stream()
                     .filter(o -> o.getId() == orderId)
@@ -153,7 +153,7 @@ public class DeliveryAgentUI {
             System.out.println("│  4. CANCELLED");
             System.out.println("└────────────────────────────────────");
 
-            int choice = InputHelper.readInt("Select new status: ");
+            int choice = InputTaker.readInt("Select new status: ");
             OrderStatus newStatus = switch (choice) {
                 case 1 -> OrderStatus.PREPARING;
                 case 2 -> OrderStatus.ON_THE_WAY;
@@ -175,7 +175,7 @@ public class DeliveryAgentUI {
         }
     }
 
-    // ─── Earnings ────────────────────────────────────────────────────────────
+    // Earnings
 
     private void viewEarnings() {
         int delivered = deliveryAgentController.viewEarnings(loggedInAgent.getId());

@@ -5,10 +5,12 @@ import com.fooddeliveryapp.model.user.User;
 import java.util.regex.Pattern;
 
 public class UserValidator {
+
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     private static final Pattern PHONE_PATTERN =
             Pattern.compile("^[6-9][0-9]{9}$");
+
     public static void validate(User user) {
         validateName(user.getName());
         validateEmail(user.getEmail());
@@ -18,7 +20,7 @@ public class UserValidator {
 
     public static void validateName(String name) {
 
-        if(name == null || name.isBlank()) {
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Name cannot be empty");
         }
     }
@@ -32,12 +34,13 @@ public class UserValidator {
 
     public static void validatePassword(String password) {
 
-        if(password == null || password.length() < 6) {
+        if (password == null || password.length() < 6) {
             throw new IllegalArgumentException(
                     "Password must be at least 6 characters"
             );
         }
     }
+
     public static void validatePhone(String phone) {
         if (phone == null || !PHONE_PATTERN.matcher(phone).matches()) {
             throw new IllegalArgumentException(

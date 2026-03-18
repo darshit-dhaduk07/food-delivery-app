@@ -10,23 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderRepository {
-    public List<OrderItem> getOrderItems(int orderId)
-    {
+    public List<OrderItem> getOrderItems(int orderId) {
         String query = """
-                    SELECT order_item_id, menu_item_id, quantity, price_at_order_item
-                    FROM order_item
-                    WHERE order_id = ?
-                    """;
+                SELECT order_item_id, menu_item_id, quantity, price_at_order_item
+                FROM order_item
+                WHERE order_id = ?
+                """;
 
         List<OrderItem> items = new ArrayList<>();
         try (
                 Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query))
-        {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, orderId);
             ResultSet rs = stmt.executeQuery();
-            while (rs.next())
-            {
+            while (rs.next()) {
                 OrderItem item = new OrderItem(
                         rs.getInt("menu_item_id"),
                         rs.getInt("quantity"),
@@ -36,33 +33,29 @@ public class OrderRepository {
                 item.setOrderId(orderId);
                 items.add(item);
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Can't get order items" + e);
         }
         return items;
     }
-    public int placeOrder(Order order)
-    {
+
+    public int placeOrder(Order order) {
         String orderQuery = """
-                            INSERT INTO orders (customer_id, address_id, discount_rate, total_amount)
-                            VALUES (?, ?, ?, ?)
-                            RETURNING order_id
-                            """;
+                INSERT INTO orders (customer_id, address_id, discount_rate, total_amount)
+                VALUES (?, ?, ?, ?)
+                RETURNING order_id
+                """;
 
         String orderItemQuery = """
-                                INSERT INTO order_item (order_id, menu_item_id, quantity, price_at_order_item)
-                                VALUES (?, ?, ?, ?)
-                                """;
+                INSERT INTO order_item (order_id, menu_item_id, quantity, price_at_order_item)
+                VALUES (?, ?, ?, ?)
+                """;
 
-        try (Connection conn = DBConnection.getConnection())
-        {
+        try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
 
             int orderId;
-            try (PreparedStatement stmt = conn.prepareStatement(orderQuery))
-            {
+            try (PreparedStatement stmt = conn.prepareStatement(orderQuery)) {
                 stmt.setInt(1, order.getCustomerId());
                 stmt.setInt(2, order.getAddressId());
                 stmt.setDouble(3, order.getDiscountRate());
@@ -73,10 +66,8 @@ public class OrderRepository {
                 orderId = rs.getInt("order_id");
             }
 
-            try (PreparedStatement stmt = conn.prepareStatement(orderItemQuery))
-            {
-                for (OrderItem item : order.getOrderItems())
-                {
+            try (PreparedStatement stmt = conn.prepareStatement(orderItemQuery)) {
+                for (OrderItem item : order.getOrderItems()) {
                     stmt.setInt(1, orderId);
                     stmt.setInt(2, item.getMenuItemId());
                     stmt.setInt(3, item.getQuantity());
@@ -89,176 +80,145 @@ public class OrderRepository {
             conn.commit();
             order.setId(orderId);
             return orderId;
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             throw new RuntimeException("Order not placed", e);
         }
     }
 
-    public List<Order> getOrdersByCustomerId(int customerId)
-    {
+    public List<Order> getOrdersByCustomerId(int customerId) {
         String query = """
-                        SELECT order_id, customer_id, delivery_agent_id,
-                               total_amount, discount_rate, status,
-                               address_id, created_at
-                        FROM orders
-                        WHERE customer_id = ?
-                        ORDER BY created_at DESC
-                        """;
+                SELECT order_id, customer_id, delivery_agent_id,
+                       total_amount, discount_rate, status,
+                       address_id, created_at
+                FROM orders
+                WHERE customer_id = ?
+                ORDER BY created_at DESC
+                """;
 
         List<Order> orders = new ArrayList<>();
         try (
                 Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query))
-        {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, customerId);
             ResultSet rs = stmt.executeQuery();
 
-            while (rs.next())
-            {
+            while (rs.next()) {
                 Order order = mapRow(rs);
                 orders.add(order);
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Can't get orders" + e);
         }
         return orders;
     }
 
-    public List<Order> getAllOrders()
-    {
+    public List<Order> getAllOrders() {
         String query = """
-                        SELECT order_id, customer_id, delivery_agent_id,
-                               total_amount, discount_rate, status,
-                               address_id, created_at
-                        FROM orders
-                        ORDER BY created_at DESC
-                        """;
+                SELECT order_id, customer_id, delivery_agent_id,
+                       total_amount, discount_rate, status,
+                       address_id, created_at
+                FROM orders
+                ORDER BY created_at DESC
+                """;
 
         List<Order> orders = new ArrayList<>();
         try (
                 Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query))
-        {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
-            while (rs.next())
-            {
+            while (rs.next()) {
                 orders.add(mapRow(rs));
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Can't get orders" + e);
         }
         return orders;
     }
 
-    public List<Order> getPendingOrders()
-    {
+    public List<Order> getPendingOrders() {
         String query = """
-                        SELECT order_id, customer_id, delivery_agent_id,
-                               total_amount, discount_rate, status,
-                               address_id, created_at
-                        FROM orders
-                        WHERE status = 'PENDING'::order_status
-                        ORDER BY created_at ASC
-                        """;
+                SELECT order_id, customer_id, delivery_agent_id,
+                       total_amount, discount_rate, status,
+                       address_id, created_at
+                FROM orders
+                WHERE status = 'PENDING'::order_status
+                ORDER BY created_at ASC
+                """;
 
         List<Order> orders = new ArrayList<>();
         try (
                 Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query))
-        {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
-            while (rs.next())
-            {
+            while (rs.next()) {
                 orders.add(mapRow(rs));
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Can't get pending orders" + e);
         }
         return orders;
     }
 
-    public void updateOrderStatus(int orderId, OrderStatus status)
-    {
+    public void updateOrderStatus(int orderId, OrderStatus status) {
         String query = """
-                        UPDATE orders
-                        SET status = ?::order_status
-                        WHERE order_id = ?
-                        """;
+                UPDATE orders
+                SET status = ?::order_status
+                WHERE order_id = ?
+                """;
         try (
                 Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query))
-        {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, status.name());
             stmt.setInt(2, orderId);
             stmt.executeUpdate();
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Status not updated" + e);
         }
     }
 
-    public void assignDeliveryAgent(int orderId, int deliveryAgentId)
-    {
+    public void assignDeliveryAgent(int orderId, int deliveryAgentId) {
         String query = """
-                        UPDATE orders
-                        SET delivery_agent_id = ?, status = 'CONFIRMED'::order_status
-                        WHERE order_id = ?
-                        """;
+                UPDATE orders
+                SET delivery_agent_id = ?, status = 'CONFIRMED'::order_status
+                WHERE order_id = ?
+                """;
         try (
                 Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query))
-        {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, deliveryAgentId);
             stmt.setInt(2, orderId);
             stmt.executeUpdate();
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Agent not assigned" + e);
         }
     }
 
-    public List<Order> getOrdersByDeliveryAgentId(int deliveryAgentId)
-    {
+    public List<Order> getOrdersByDeliveryAgentId(int deliveryAgentId) {
         String query = """
-                        SELECT order_id, customer_id, delivery_agent_id,
-                               total_amount, discount_rate, status,
-                               address_id, created_at
-                        FROM orders
-                        WHERE delivery_agent_id = ?
-                        ORDER BY created_at DESC
-                        """;
+                SELECT order_id, customer_id, delivery_agent_id,
+                       total_amount, discount_rate, status,
+                       address_id, created_at
+                FROM orders
+                WHERE delivery_agent_id = ?
+                ORDER BY created_at DESC
+                """;
 
         List<Order> orders = new ArrayList<>();
         try (
                 Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query))
-        {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, deliveryAgentId);
             ResultSet rs = stmt.executeQuery();
-            while (rs.next())
-            {
+            while (rs.next()) {
                 orders.add(mapRow(rs));
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Can't get orders" + e);
         }
         return orders;
     }
 
-    private Order mapRow(ResultSet rs) throws SQLException
-    {
+    private Order mapRow(ResultSet rs) throws SQLException {
         Order order = new Order(
                 rs.getInt("customer_id"),
                 rs.getInt("delivery_agent_id"),
@@ -271,16 +231,17 @@ public class OrderRepository {
         order.setDiscountRate(rs.getDouble("discount_rate"));
         return order;
     }
+
     public List<Order> getPendingUnassignedOrders() {
         String query = """
-                    SELECT order_id, customer_id, delivery_agent_id,
-                           total_amount, discount_rate, status,
-                           address_id, created_at
-                    FROM orders
-                    WHERE status = 'CONFIRMED'::order_status
-                    AND delivery_agent_id IS NULL
-                    ORDER BY created_at ASC
-                    """;
+                SELECT order_id, customer_id, delivery_agent_id,
+                       total_amount, discount_rate, status,
+                       address_id, created_at
+                FROM orders
+                WHERE status = 'CONFIRMED'::order_status
+                AND delivery_agent_id IS NULL
+                ORDER BY created_at ASC
+                """;
 
         List<Order> orders = new ArrayList<>();
         try (

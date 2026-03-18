@@ -1,6 +1,6 @@
 package com.fooddeliveryapp.ui;
 
-import com.fooddeliveryapp.utility.InputHelper;
+import com.fooddeliveryapp.utility.InputTaker;
 
 public class ConsoleUI {
 
@@ -26,7 +26,7 @@ public class ConsoleUI {
             System.out.println("  0. Exit                             ");
             System.out.println("══════════════════════════════════════");
 
-            int choice = InputHelper.readInt("Select Option: ");
+            int choice = InputTaker.readInt("Select Option: ");
             switch (choice) {
                 case 1 -> adminUI.menu();
                 case 2 -> customerUI.menu();

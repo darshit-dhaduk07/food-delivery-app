@@ -18,10 +18,10 @@ public class CustomerRepository {
 
     public List<Address> getAddressesByCustomerId(int customerId) {
         String query = """
-                    SELECT address_id, address, customer_id
-                    FROM addresses
-                    WHERE customer_id = ?
-                    """;
+                SELECT address_id, address, customer_id
+                FROM addresses
+                WHERE customer_id = ?
+                """;
 
         List<Address> addresses = new ArrayList<>();
         try (
@@ -42,6 +42,7 @@ public class CustomerRepository {
         }
         return addresses;
     }
+
     public int addCustomer(Customer customer) {
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
@@ -73,7 +74,7 @@ public class CustomerRepository {
 
     public List<Customer> getAllCustomer() {
         List<User> users = UserRepository.getAllUsers(Role.CUSTOMER);
-        return users.stream().map(u->(Customer)u).toList();
+        return users.stream().map(u -> (Customer) u).toList();
     }
 
     public void removeCustomer(int id) {
@@ -82,10 +83,10 @@ public class CustomerRepository {
 
     public int addAddress(Address address) {
         String query = """
-                    INSERT INTO addresses (address, customer_id)
-                    VALUES (?, ?)
-                    RETURNING address_id
-                    """;
+                INSERT INTO addresses (address, customer_id)
+                VALUES (?, ?)
+                RETURNING address_id
+                """;
 
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {

@@ -68,16 +68,17 @@ public class DeliveryAgentRepository {
     public void removeAgent(int id) {
         UserRepository.deleteById(id);
     }
+
     public DeliveryAgent getAvailableAgent() {
         String query = """
-                    SELECT u.user_id, u.name, u.email, u.phone, u.role, u.is_active,
-                           da.availability, da.last_free_time, da.order_assign_time
-                    FROM delivery_agents da
-                    JOIN users u ON u.user_id = da.delivery_agent_id
-                    WHERE da.availability = true AND u.is_active = true
-                    ORDER BY da.last_free_time ASC
-                    LIMIT 1
-                    """;
+                SELECT u.user_id, u.name, u.email, u.phone, u.role, u.is_active,
+                       da.availability, da.last_free_time, da.order_assign_time
+                FROM delivery_agents da
+                JOIN users u ON u.user_id = da.delivery_agent_id
+                WHERE da.availability = true AND u.is_active = true
+                ORDER BY da.last_free_time ASC
+                LIMIT 1
+                """;
 
         try (
                 Connection conn = DBConnection.getConnection();
@@ -106,16 +107,16 @@ public class DeliveryAgentRepository {
         String query;
         if (availability) {
             query = """
-                UPDATE delivery_agents
-                SET availability = true, last_free_time = CURRENT_TIMESTAMP
-                WHERE delivery_agent_id = ?
-                """;
+                    UPDATE delivery_agents
+                    SET availability = true, last_free_time = CURRENT_TIMESTAMP
+                    WHERE delivery_agent_id = ?
+                    """;
         } else {
             query = """
-                UPDATE delivery_agents
-                SET availability = false, order_assign_time = CURRENT_TIMESTAMP
-                WHERE delivery_agent_id = ?
-                """;
+                    UPDATE delivery_agents
+                    SET availability = false, order_assign_time = CURRENT_TIMESTAMP
+                    WHERE delivery_agent_id = ?
+                    """;
         }
 
         try (

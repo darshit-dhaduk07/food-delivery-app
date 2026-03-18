@@ -21,7 +21,7 @@ public class App {
 
     public static void main(String[] args) {
 
-        // ── Repositories ────────────────────────────────
+        //repo
         UserRepository userRepository = new UserRepository();
         CustomerRepository customerRepository = new CustomerRepository();
         DeliveryAgentRepository deliveryAgentRepository = new DeliveryAgentRepository();
@@ -32,7 +32,7 @@ public class App {
         PaymentRepository paymentRepository = new PaymentRepository();
         DiscountRepository discountRepository = new DiscountRepository();
 
-        // ── Services ────────────────────────────────────
+        //service
         PaymentProcessor paymentProcessor = new PaymentProcessor();
 
         AuthService authService = new AuthService(
@@ -74,13 +74,13 @@ public class App {
                 paymentProcessor
         );
 
-        // ── Controllers ─────────────────────────────────
+        // controller
         AuthenticationController authController = new AuthenticationController(authService);
         CustomerController customerController = new CustomerController(customerService);
         AdminController adminController = new AdminController(adminService);
         DeliveryAgentController deliveryAgentController = new DeliveryAgentController(deliveryAgentService);
 
-        // ── UI ──────────────────────────────────────────
+        // ui
         CustomerUI customerUI = new CustomerUI(authController, customerController);
         AdminUI adminUI = new AdminUI(authController, adminController);
         DeliveryAgentUI deliveryAgentUI = new DeliveryAgentUI(authController, deliveryAgentController);
@@ -89,7 +89,7 @@ public class App {
 
         addAdmin(adminRepository, authService);
 
-        // ── Start ───────────────────────────────────────
+        // start
         consoleUI.start();
     }
 }

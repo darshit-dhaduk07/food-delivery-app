@@ -16,7 +16,7 @@ import java.util.List;
 
 public class UserRepository {
 
-    // without password — for listing only
+
     private static User mapRow(ResultSet rs, Role role) throws SQLException {
         User user = switch (role) {
             case CUSTOMER -> new Customer();
@@ -32,7 +32,6 @@ public class UserRepository {
         return user;
     }
 
-    // with password — for login only
     private static User mapRowWithPassword(ResultSet rs, Role role) throws SQLException {
         User user = mapRow(rs, role);
         user.setPassword(rs.getString("password"));

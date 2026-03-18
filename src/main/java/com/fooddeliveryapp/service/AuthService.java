@@ -56,7 +56,6 @@ public class AuthService {
         int id = deliveryAgentRepository.addDeliveryAgent(agent);
         agent.setId(id);
 
-        // new agent just became available — assign pending order if any
         assignPendingOrderIfExists();
 
         return agent;

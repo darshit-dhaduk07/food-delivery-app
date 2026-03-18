@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Scanner;
 
-public class InputHelper {
+public class InputTaker {
 
     private static final Scanner scanner = new Scanner(System.in);
 

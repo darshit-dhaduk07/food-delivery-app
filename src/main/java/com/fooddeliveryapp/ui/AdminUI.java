@@ -10,7 +10,7 @@ import com.fooddeliveryapp.model.user.Admin;
 import com.fooddeliveryapp.model.user.Customer;
 import com.fooddeliveryapp.model.user.DeliveryAgent;
 import com.fooddeliveryapp.model.user.User;
-import com.fooddeliveryapp.utility.InputHelper;
+import com.fooddeliveryapp.utility.InputTaker;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -27,12 +27,12 @@ public class AdminUI {
         this.adminController = adminController;
     }
 
-    // ─── Login ───────────────────────────────────────────────────────────────
+    // Login
 
     public void menu() {
         System.out.println("\n┌─── Admin Login ────────────────────");
-        String email    = InputHelper.readString("│  Email    : ");
-        String password = InputHelper.readString("│  Password : ");
+        String email    = InputTaker.readString("│  Email    : ");
+        String password = InputTaker.readString("│  Password : ");
         System.out.println("└────────────────────────────────────");
         try {
             User user = authController.login(email, password);
@@ -48,7 +48,7 @@ public class AdminUI {
         }
     }
 
-    // ─── Panel — split into sub-menus ────────────────────────────────────────
+    // Panel — split into sub-menus
 
     private void adminPanel() {
         while (true) {
@@ -63,7 +63,7 @@ public class AdminUI {
             System.out.println("║  0. Logout                   ║");
             System.out.println("╚══════════════════════════════╝");
 
-            int choice = InputHelper.readInt("Select: ");
+            int choice = InputTaker.readInt("Select: ");
             switch (choice) {
                 case 1 -> menuManagement();
                 case 2 -> agentManagement();
@@ -79,7 +79,7 @@ public class AdminUI {
         }
     }
 
-    // ─── Menu Management Sub-Panel ───────────────────────────────────────────
+    //  Menu Management Sub-Panel
 
     private void menuManagement() {
         while (true) {
@@ -96,7 +96,7 @@ public class AdminUI {
             System.out.println("║  0. Back                     ║");
             System.out.println("╚══════════════════════════════╝");
 
-            int choice = InputHelper.readInt("Select: ");
+            int choice = InputTaker.readInt("Select: ");
             switch (choice) {
                 case 1 -> viewAllMenuItems();
                 case 2 -> addMenuItem();
@@ -110,7 +110,7 @@ public class AdminUI {
         }
     }
 
-    // ─── Agent Management Sub-Panel ──────────────────────────────────────────
+    //  Agent Management Sub-Panel
 
     private void agentManagement() {
         while (true) {
@@ -125,7 +125,7 @@ public class AdminUI {
             System.out.println("║  0. Back                     ║");
             System.out.println("╚══════════════════════════════╝");
 
-            int choice = InputHelper.readInt("Select: ");
+            int choice = InputTaker.readInt("Select: ");
             switch (choice) {
                 case 1 -> viewAllDeliveryAgents();
                 case 2 -> addDeliveryAgent();
@@ -137,7 +137,7 @@ public class AdminUI {
         }
     }
 
-    // ─── Reports Sub-Panel ───────────────────────────────────────────────────
+    // Reports Sub-Panel
 
     private void reports() {
         while (true) {
@@ -150,7 +150,7 @@ public class AdminUI {
             System.out.println("║  0. Back                     ║");
             System.out.println("╚══════════════════════════════╝");
 
-            int choice = InputHelper.readInt("Select: ");
+            int choice = InputTaker.readInt("Select: ");
             switch (choice) {
                 case 1 -> viewAllOrders();
                 case 2 -> viewAllCustomers();
@@ -160,7 +160,7 @@ public class AdminUI {
         }
     }
 
-    // ─── Discount Sub-Panel ──────────────────────────────────────────────────
+    // Discount Sub-Panel
 
     private void discountManagement() {
         while (true) {
@@ -173,7 +173,7 @@ public class AdminUI {
             System.out.println("║  0. Back                     ║");
             System.out.println("╚══════════════════════════════╝");
 
-            int choice = InputHelper.readInt("Select: ");
+            int choice = InputTaker.readInt("Select: ");
             switch (choice) {
                 case 1 -> setDiscount();
                 case 2 -> viewActiveDiscount();
@@ -183,7 +183,7 @@ public class AdminUI {
         }
     }
 
-    // ─── Menu Methods ─────────────────────────────────────────────────────────
+    // Menu Methods
 
     private void viewAllMenuItems() {
         List<MenuCategory> categories = adminController.getAllMenuCategories();
@@ -240,10 +240,10 @@ public class AdminUI {
         viewAllCategories();
         System.out.println("\n┌─── Add Menu Item ──────────────────");
         try {
-            String name      = InputHelper.readString("│  Item Name   : ");
-            BigDecimal price = InputHelper.readBigDecimal("│  Price (₹)   : ");
+            String name      = InputTaker.readString("│  Item Name   : ");
+            BigDecimal price = InputTaker.readBigDecimal("│  Price (₹)   : ");
             List<Integer> validIds = categories.stream().map(MenuCategory::getId).toList();
-            int categoryId   = InputHelper.readIdFromList("│  Category ID : ", validIds);
+            int categoryId   = InputTaker.readIdFromList("│  Category ID : ", validIds);
             System.out.println("└────────────────────────────────────");
             adminController.addMenuItem(name, price, categoryId);
             System.out.println("✅ Menu item added.");
@@ -262,7 +262,7 @@ public class AdminUI {
         viewAllMenuItems();
         try {
             List<Integer> validIds = items.stream().map(MenuItem::getId).toList();
-            int id = InputHelper.readIdFromList("Enter Menu Item ID to remove: ", validIds);
+            int id = InputTaker.readIdFromList("Enter Menu Item ID to remove: ", validIds);
             adminController.removeMenuItem(id);
             System.out.println("✅ Menu item removed.");
         } catch (Exception e) {
@@ -273,7 +273,7 @@ public class AdminUI {
     private void addMenuCategory() {
         System.out.println("\n┌─── Add Category ───────────────────");
         try {
-            String name = InputHelper.readString("│  Category Name: ");
+            String name = InputTaker.readString("│  Category Name: ");
             System.out.println("└────────────────────────────────────");
             adminController.addMenuCategory(name);
             System.out.println("✅ Category added.");
@@ -292,7 +292,7 @@ public class AdminUI {
         viewAllCategories();
         try {
             List<Integer> validIds = categories.stream().map(MenuCategory::getId).toList();
-            int id = InputHelper.readIdFromList("Enter Category ID to remove: ", validIds);
+            int id = InputTaker.readIdFromList("Enter Category ID to remove: ", validIds);
             adminController.removeMenuCategory(id);
             System.out.println("✅ Category removed.");
         } catch (Exception e) {
@@ -300,7 +300,7 @@ public class AdminUI {
         }
     }
 
-    // ─── Agent Methods ────────────────────────────────────────────────────────
+    // Agent Methods
 
     private void viewAllDeliveryAgents() {
         List<DeliveryAgent> agents = adminController.getAllDeliveryAgents();
@@ -324,10 +324,10 @@ public class AdminUI {
     private void addDeliveryAgent() {
         System.out.println("\n┌─── Add Delivery Agent ─────────────");
         try {
-            String name     = InputHelper.readString("│  Name     : ");
-            String email    = InputHelper.readString("│  Email    : ");
-            String phone    = InputHelper.readString("│  Phone    : ");
-            String password = InputHelper.readString("│  Password : ");
+            String name     = InputTaker.readString("│  Name     : ");
+            String email    = InputTaker.readString("│  Email    : ");
+            String phone    = InputTaker.readString("│  Phone    : ");
+            String password = InputTaker.readString("│  Password : ");
             System.out.println("└────────────────────────────────────");
             adminController.addDeliveryAgent(name, email, phone, password);
             System.out.println("✅ Delivery agent added.");
@@ -346,7 +346,7 @@ public class AdminUI {
         viewAllDeliveryAgents();
         try {
             List<Integer> validIds = agents.stream().map(DeliveryAgent::getId).toList();
-            int id = InputHelper.readIdFromList("Enter Agent ID to remove: ", validIds);
+            int id = InputTaker.readIdFromList("Enter Agent ID to remove: ", validIds);
             adminController.removeDeliveryAgent(id);
             System.out.println("✅ Delivery agent removed.");
         } catch (Exception e) {
@@ -386,9 +386,9 @@ public class AdminUI {
 
         try {
             List<Integer> validOrderIds = unassigned.stream().map(Order::getId).toList();
-            int orderId = InputHelper.readIdFromList("Select Order ID : ", validOrderIds);
+            int orderId = InputTaker.readIdFromList("Select Order ID : ", validOrderIds);
             List<Integer> validAgentIds = agents.stream().map(DeliveryAgent::getId).toList();
-            int agentId = InputHelper.readIdFromList("Select Agent ID : ", validAgentIds);
+            int agentId = InputTaker.readIdFromList("Select Agent ID : ", validAgentIds);
             adminController.manualAssignAgent(orderId, agentId);
             System.out.println("✅ Order #" + orderId + " assigned to agent #" + agentId);
         } catch (Exception e) {
@@ -396,7 +396,7 @@ public class AdminUI {
         }
     }
 
-    // ─── Report Methods ───────────────────────────────────────────────────────
+    // Report Methods
 
     private void viewAllOrders() {
         List<Order> orders = adminController.getAllOrders();
@@ -434,14 +434,14 @@ public class AdminUI {
         System.out.println("└───────────────────────────────────────────────────────────────────");
     }
 
-    // ─── Discount Methods ─────────────────────────────────────────────────────
+    //  Discount Methods
 
     private void setDiscount() {
         System.out.println("\n┌─── Set Discount ───────────────────");
         try {
-            String name          = InputHelper.readString("│  Name           : ");
-            BigDecimal minAmount = InputHelper.readBigDecimal("│  Min Amount (₹) : ");
-            int rate             = InputHelper.readInt("│  Rate (%)       : ");
+            String name          = InputTaker.readString("│  Name           : ");
+            BigDecimal minAmount = InputTaker.readBigDecimal("│  Min Amount (₹) : ");
+            int rate             = InputTaker.readInt("│  Rate (%)       : ");
             System.out.println("└────────────────────────────────────");
             if (rate < 0 || rate > 100)
                 throw new IllegalArgumentException("Rate must be between 0 and 100.");

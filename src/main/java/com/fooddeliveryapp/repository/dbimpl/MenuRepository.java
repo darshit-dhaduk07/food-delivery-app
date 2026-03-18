@@ -38,59 +38,50 @@ public class MenuRepository {
     }
 
 
-    public List<MenuItem> getAllMenuItems()
-    {
+    public List<MenuItem> getAllMenuItems() {
         String query = """
-                    SELECT menu_item_id, name, price, available, category_id
-                    FROM menu_items
-                    """;
+                SELECT menu_item_id, name, price, available, category_id
+                FROM menu_items
+                """;
         List<MenuItem> menuItems = new ArrayList<>();
-        try(
+        try (
                 Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query))
-        {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
-            while (rs.next())
-            {
+            while (rs.next()) {
                 MenuItem item = new MenuItem(rs.getBigDecimal("price"), rs.getString("name"));
                 item.setId(rs.getInt("menu_item_id"));
                 item.setAvailable(rs.getBoolean("available"));
                 item.setCategoryId(rs.getInt("category_id"));
                 menuItems.add(item);
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Can't get menu items" + e);
         }
         return menuItems;
     }
 
-    public List<MenuCategory> getAllMenuCategories()
-    {
+    public List<MenuCategory> getAllMenuCategories() {
         String query = """
-                    SELECT category_id, name
-                    FROM menu_categories
-                    """;
+                SELECT category_id, name
+                FROM menu_categories
+                """;
         List<MenuCategory> categories = new ArrayList<>();
-        try(
+        try (
                 Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query))
-        {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
-            while (rs.next())
-            {
+            while (rs.next()) {
                 MenuCategory category = new MenuCategory(rs.getString("name"));
                 category.setId(rs.getInt("category_id"));
                 categories.add(category);
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Can't get menu categories" + e);
         }
         return categories;
     }
+
     public void addMenuCategory(MenuCategory cat) {
         String query = """
                 INSERT INTO menu_categories(name)
@@ -129,12 +120,13 @@ public class MenuRepository {
             throw new RuntimeException("Failed to add menu item", e);
         }
     }
+
     public void removeMenuItem(int menuItemId) {
         String query = """
-            UPDATE menu_items
-            SET available = false
-            WHERE menu_item_id = ?
-            """;
+                UPDATE menu_items
+                SET available = false
+                WHERE menu_item_id = ?
+                """;
 
         try (
                 Connection conn = DBConnection.getConnection();
@@ -150,10 +142,10 @@ public class MenuRepository {
 
     public void removeMenuCategory(int categoryId) {
         String query = """
-            UPDATE menu_categories
-            SET is_active = false
-            WHERE category_id = ?
-            """;
+                UPDATE menu_categories
+                SET is_active = false
+                WHERE category_id = ?
+                """;
 
         try (
                 Connection conn = DBConnection.getConnection();
@@ -166,12 +158,13 @@ public class MenuRepository {
             throw new RuntimeException("Failed to remove menu category", e);
         }
     }
+
     public MenuItem getMenuItemById(int menuItemId) {
         String query = """
-            SELECT menu_item_id, name, price, available
-            FROM menu_items
-            WHERE menu_item_id = ? AND available = true
-            """;
+                SELECT menu_item_id, name, price, available
+                FROM menu_items
+                WHERE menu_item_id = ? AND available = true
+                """;
 
         try (
                 Connection conn = DBConnection.getConnection();

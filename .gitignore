@@ -48,5 +48,5 @@ build/
 Thumbs.db
 
 # Environment files
-.env
+src/main/resources/.env
 application.properties

@@ -9,7 +9,7 @@ import com.fooddeliveryapp.model.order.Order;
 import com.fooddeliveryapp.model.user.Address;
 import com.fooddeliveryapp.model.user.Customer;
 import com.fooddeliveryapp.model.user.User;
-import com.fooddeliveryapp.utility.InputHelper;
+import com.fooddeliveryapp.utility.InputTaker;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class CustomerUI {
         this.customerController = customerController;
     }
 
-    // ─── Main Menu ───────────────────────────────────────────────────────────
+    // Main Menu
 
     public void menu() {
         while (true) {
@@ -37,7 +37,7 @@ public class CustomerUI {
             System.out.println("║  0. Back                     ║");
             System.out.println("╚══════════════════════════════╝");
 
-            int choice = InputHelper.readInt("Select: ");
+            int choice = InputTaker.readInt("Select: ");
             switch (choice) {
                 case 1 -> register();
                 case 2 -> {
@@ -50,14 +50,14 @@ public class CustomerUI {
         }
     }
 
-    // ─── Auth ────────────────────────────────────────────────────────────────
+    // Auth
 
     private void register() {
         System.out.println("\n┌─── Register ───────────────────────");
-        String name     = InputHelper.readString("│  Name     : ");
-        String email    = InputHelper.readString("│  Email    : ");
-        String phone    = InputHelper.readString("│  Phone    : ");
-        String password = InputHelper.readString("│  Password : ");
+        String name     = InputTaker.readString("│  Name     : ");
+        String email    = InputTaker.readString("│  Email    : ");
+        String phone    = InputTaker.readString("│  Phone    : ");
+        String password = InputTaker.readString("│  Password : ");
         System.out.println("└────────────────────────────────────");
         try {
             Customer c = authController.registerCustomer(name, email, phone, password);
@@ -69,8 +69,8 @@ public class CustomerUI {
 
     private void login() {
         System.out.println("\n┌─── Login ──────────────────────────");
-        String email    = InputHelper.readString("│  Email    : ");
-        String password = InputHelper.readString("│  Password : ");
+        String email    = InputTaker.readString("│  Email    : ");
+        String password = InputTaker.readString("│  Password : ");
         System.out.println("└────────────────────────────────────");
         try {
             User user = authController.login(email, password);
@@ -85,7 +85,7 @@ public class CustomerUI {
         }
     }
 
-    // ─── Customer Panel ──────────────────────────────────────────────────────
+    // Customer Panel
 
     private void customerPanel() {
         while (true) {
@@ -113,7 +113,7 @@ public class CustomerUI {
             System.out.println("║   0. Logout                  ║");
             System.out.println("╚══════════════════════════════╝");
 
-            int choice = InputHelper.readInt("Select: ");
+            int choice = InputTaker.readInt("Select: ");
             switch (choice) {
                 case 1 -> viewMenu();
                 case 2 -> viewCart();
@@ -134,7 +134,7 @@ public class CustomerUI {
         }
     }
 
-    // ─── Menu ────────────────────────────────────────────────────────────────
+    // Menu
 
     private void viewMenu() {
         List<MenuItem> items = customerController.getAvailableMenuItems();
@@ -152,7 +152,7 @@ public class CustomerUI {
         System.out.println("└────────────────────────────────────────────────");
     }
 
-    // ─── Cart ────────────────────────────────────────────────────────────────
+    // Cart
 
     private void viewCart() {
         List<CartItem> items = customerController.viewCart(loggedInCustomer.getId());
@@ -181,8 +181,8 @@ public class CustomerUI {
         viewMenu();
         try {
             List<Integer> validIds = items.stream().map(MenuItem::getId).toList();
-            int menuItemId = InputHelper.readIdFromList("Enter Menu Item ID : ", validIds);
-            int quantity   = InputHelper.readPositiveInt("Enter Quantity     : ");
+            int menuItemId = InputTaker.readIdFromList("Enter Menu Item ID : ", validIds);
+            int quantity   = InputTaker.readPositiveInt("Enter Quantity     : ");
             customerController.addToCart(loggedInCustomer.getId(), menuItemId, quantity);
             System.out.println("✅ Item added to cart.");
         } catch (Exception e) {
@@ -199,7 +199,7 @@ public class CustomerUI {
         viewCart();
         try {
             List<Integer> validIds = items.stream().map(CartItem::getId).toList();
-            int cartItemId = InputHelper.readIdFromList("Enter Cart Item ID to remove: ", validIds);
+            int cartItemId = InputTaker.readIdFromList("Enter Cart Item ID to remove: ", validIds);
             customerController.removeFromCart(cartItemId);
             System.out.println("✅ Item removed.");
         } catch (Exception e) {
@@ -216,8 +216,8 @@ public class CustomerUI {
         viewCart();
         try {
             List<Integer> validIds = items.stream().map(CartItem::getId).toList();
-            int cartItemId = InputHelper.readIdFromList("Enter Cart Item ID : ", validIds);
-            int quantity   = InputHelper.readPositiveInt("New Quantity       : ");
+            int cartItemId = InputTaker.readIdFromList("Enter Cart Item ID : ", validIds);
+            int quantity   = InputTaker.readPositiveInt("New Quantity       : ");
             customerController.updateCartQuantity(cartItemId, quantity);
             System.out.println("✅ Quantity updated.");
         } catch (Exception e) {
@@ -225,12 +225,12 @@ public class CustomerUI {
         }
     }
 
-    // ─── Address ─────────────────────────────────────────────────────────────
+    // Address
 
     private void addAddress() {
         System.out.println("\n┌─── Add Address ────────────────────");
         try {
-            String addressName = InputHelper.readString("│  Address: ");
+            String addressName = InputTaker.readString("│  Address: ");
             System.out.println("└────────────────────────────────────");
             customerController.addAddress(loggedInCustomer.getId(), addressName);
             System.out.println("✅ Address saved.");
@@ -256,7 +256,7 @@ public class CustomerUI {
         return addresses;
     }
 
-    // ─── Order ───────────────────────────────────────────────────────────────
+    // Order
 
     private void placeOrder() {
         // Step 1 — address
@@ -268,7 +268,7 @@ public class CustomerUI {
 
         try {
             List<Integer> validAddressIds = addresses.stream().map(Address::getId).toList();
-            int addressId = InputHelper.readIdFromList("Select Address ID: ", validAddressIds);
+            int addressId = InputTaker.readIdFromList("Select Address ID: ", validAddressIds);
 
             // Step 2 — cart
             List<CartItem> cartItems = customerController.viewCart(loggedInCustomer.getId());
@@ -283,7 +283,7 @@ public class CustomerUI {
             System.out.println("│  1. UPI");
             System.out.println("│  2. Cash on Delivery");
             System.out.println("└────────────────────────────────────");
-            int payChoice = InputHelper.readInt("Select: ");
+            int payChoice = InputTaker.readInt("Select: ");
 
             PaymentMethod paymentMethod = switch (payChoice) {
                 case 1  -> PaymentMethod.UPI;
@@ -303,7 +303,7 @@ public class CustomerUI {
             System.out.printf("│  Items    : %d item(s) in cart%n", cartItems.size());
             System.out.println("└────────────────────────────────────");
 
-            String confirm = InputHelper.readString("Confirm order? (yes/no): ");
+            String confirm = InputTaker.readString("Confirm order? (yes/no): ");
             if (!confirm.equalsIgnoreCase("yes")) {
                 System.out.println("⚠ Order cancelled.");
                 return;
